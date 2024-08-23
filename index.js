@@ -125,6 +125,8 @@ header h2 {
   color: #fff;
   font-size: 0.95rem;
   background: #724ae8;
+  word-wrap: break-word; /* Ensure long words break */
+  overflow-wrap: break-word; /* Ensure text wraps within the bubble */
 }
 .chatbox .incoming p {
   border-radius: 10px 10px 10px 0;
@@ -196,8 +198,8 @@ header h2 {
 }
 `;
 
-const styleSheet = document.createElement("style");
-styleSheet.type = "text/css";
+const styleSheet = document.createElement('style');
+styleSheet.type = 'text/css';
 styleSheet.innerText = style;
 document.head.appendChild(styleSheet);
 
@@ -214,8 +216,7 @@ const chatbotHTML = `
     </header>
     <ul class="chatbox">
       <li class="chat incoming">
-        <span class="material-symbols-outlined">smart_toy</span>
-        <p>Hi there 👋<br>How can I help you today?</p>
+       
       </li>
     </ul>
     <div class="chat-input">
@@ -228,59 +229,172 @@ const chatbotHTML = `
 document.body.insertAdjacentHTML('beforeend', chatbotHTML);
 
 // Your existing JavaScript logic
-const chatbotToggler = document.querySelector(".chatbot-toggler");
-const closeBtn = document.querySelector(".close-btn");
-const chatbox = document.querySelector(".chatbox");
-const chatInput = document.querySelector(".chat-input textarea");
-const sendChatBtn = document.querySelector(".chat-input span");
+const chatbotToggler = document.querySelector('.chatbot-toggler');
+const closeBtn = document.querySelector('.close-btn');
+const chatbox = document.querySelector('.chatbox');
+const chatInput = document.querySelector('.chat-input textarea');
+const sendChatBtn = document.querySelector('.chat-input span');
 
 let userMessage = null;
 const inputInitHeight = chatInput.scrollHeight;
 
 const createChatLi = (message, className) => {
-    const chatLi = document.createElement("li");
-    chatLi.classList.add("chat", `${className}`);
-    let chatContent = className === "outgoing" ? `<p></p>` : `<span class="material-symbols-outlined">smart_toy</span><p></p>`;
-    chatLi.innerHTML = chatContent;
-    chatLi.querySelector("p").textContent = message;
-    return chatLi;
-}
+  const chatLi = document.createElement('li');
+  chatLi.classList.add('chat', `${className}`);
+  let chatContent =
+    className === 'outgoing'
+      ? `<p></p>`
+      : `<span class="material-symbols-outlined">smart_toy</span><p></p>`;
+  chatLi.innerHTML = chatContent;
+  chatLi.querySelector('p').textContent = message;
+  return chatLi;
+};
+
+const streamResponse = async (chatElement) => {
+  const messageElement = chatElement.querySelector('p');
+
+  try {
+    // Replace 'YOUR_API_ENDPOINT' with the actual endpoint URL
+    const response = await fetch('http://3.1.70.11:5000/api/generate_response', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        // Add any additional headers required by your API here
+      },
+      body: JSON.stringify({
+        user_query: userMessage,
+        user_id: 512, // Add user_id if necessary
+      }),
+    });
+
+    // Assuming the API sends data as text/event-stream
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let firstChunk = true;
+    // Read the stream
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      // Decode and append the response chunk
+      const chunk = decoder.decode(value, { stream: true });
+      if (firstChunk) {
+        // Replace "Thinking..." with the first chunk
+        messageElement.textContent = chunk;
+        firstChunk = false;
+      } else {
+        // Append the subsequent chunks
+        messageElement.textContent += chunk;
+      }
+      chatbox.scrollTo(0, chatbox.scrollHeight);
+    }
+  } catch (error) {
+    console.error('Error fetching response:', error);
+    messageElement.textContent = 'Sorry, something went wrong. Please try again.';
+  }
+};
+
+const userId = 512; // Replace with the actual user ID
+let pageNumber = 1;
+let isFirstLoad = true; 
+
+const fetchChatHistory = async (userId, pageNumber) => {
+  try {
+    const scrollHeightBeforeLoad = chatbox.scrollHeight;
+    const response = await fetch('http://3.1.70.11:5000/api/get_chat_history', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        user_id: userId,
+        page_number: pageNumber,
+      }),
+    });
+
+    const data = await response.json();
+    console.log('the chatbot history api is: ', data);
+    if (data && data.chat_history) {
+      data.chat_history.reverse().forEach((chat) => {
+        if (chat.ai_response) {
+          const botChatLi = createChatLi(chat.ai_response, 'incoming');
+          
+          chatbox.prepend(botChatLi);
+          console.log('Bot reply added:', chat.ai_response);
+        }
+        // Display user message
+        if (chat.user_message) {
+          const userChatLi = createChatLi(chat.user_message, 'outgoing');
+          chatbox.prepend(userChatLi);
+        }
+
+        // Display AI response
+        
+      });
+      // Maintain scroll position
+      if (isFirstLoad) {
+        // Scroll to bottom if it's the first load
+        chatbox.scrollTop = chatbox.scrollHeight;
+        isFirstLoad = false; // Set flag to false after the first load
+    } else {
+        // Maintain scroll position for subsequent loads
+        const scrollHeightBefore = chatbox.scrollHeight;
+        chatbox.scrollTop = newScrollHeight - scrollHeightBeforeLoad;
+    }
+    }
+  } catch (error) {
+    console.error('Error fetching chat history:', error);
+  }
+};
+
+fetchChatHistory(userId, pageNumber);
+
+chatbox.addEventListener('scroll', () => {
+  if (chatbox.scrollTop === 0) {
+    pageNumber++;
+    fetchChatHistory(userId, pageNumber);
+  }
+});
 
 const generateResponse = (chatElement) => {
-    const messageElement = chatElement.querySelector("p");
-    messageElement.textContent = "The answer is yes";
-    chatbox.scrollTo(0, chatbox.scrollHeight);
-}
+  const messageElement = chatElement.querySelector('p');
+  messageElement.textContent = responseText;
+  chatbox.scrollTo(0, chatbox.scrollHeight);
+};
 
 const handleChat = () => {
-    userMessage = chatInput.value.trim();
-    if (!userMessage) return;
+  userMessage = chatInput.value.trim();
+  if (!userMessage) return;
 
-    chatInput.value = "";
-    chatInput.style.height = `${inputInitHeight}px`;
-    chatbox.appendChild(createChatLi(userMessage, "outgoing"));
-    chatbox.scrollTo(0, chatbox.scrollHeight);
+  chatInput.value = '';
+  chatInput.style.height = `${inputInitHeight}px`;
+  chatbox.appendChild(createChatLi(userMessage, 'outgoing'));
+  chatbox.scrollTo(0, chatbox.scrollHeight);
 
-    setTimeout(() => {
-        const incomingChatLi = createChatLi("Thinking...", "incoming");
-        chatbox.appendChild(incomingChatLi);
-        chatbox.scrollTo(0, chatbox.scrollHeight);
-        generateResponse(incomingChatLi);
-    }, 600);
-}
+  const incomingChatLi = createChatLi('Thinking...', 'incoming');
+  chatbox.appendChild(incomingChatLi);
+  chatbox.scrollTo(0, chatbox.scrollHeight);
 
-chatInput.addEventListener("input", () => {
-    chatInput.style.height = `${inputInitHeight}px`;
-    chatInput.style.height = `${chatInput.scrollHeight}px`;
+  // Initiate the API call and stream the response
+  streamResponse(incomingChatLi);
+};
+
+chatInput.addEventListener('input', () => {
+  chatInput.style.height = `${inputInitHeight}px`;
+  chatInput.style.height = `${chatInput.scrollHeight}px`;
 });
 
-chatInput.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" && !e.shiftKey && window.innerWidth > 800) {
-        e.preventDefault();
-        handleChat();
-    }
+chatInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey && window.innerWidth > 800) {
+    e.preventDefault();
+    handleChat();
+  }
 });
 
-sendChatBtn.addEventListener("click", handleChat);
-closeBtn.addEventListener("click", () => document.body.classList.remove("show-chatbot"));
-chatbotToggler.addEventListener("click", () => document.body.classList.toggle("show-chatbot"));
+sendChatBtn.addEventListener('click', handleChat);
+closeBtn.addEventListener('click', () =>
+  document.body.classList.remove('show-chatbot'),
+);
+chatbotToggler.addEventListener('click', () =>
+  document.body.classList.toggle('show-chatbot'),
+);
