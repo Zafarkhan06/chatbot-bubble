@@ -118,15 +118,12 @@ header h2 {
   margin: 0 10px 7px 0;
 }
 .chatbox .chat p {
-  white-space: pre-wrap;
-  padding: 12px 16px;
+  padding: 12px 12px;
   border-radius: 10px 10px 0 10px;
-  max-width: 75%;
+  max-width: 85%;
   color: #fff;
   font-size: 0.95rem;
   background: #724ae8;
-  word-wrap: break-word; /* Ensure long words break */
-  overflow-wrap: break-word; /* Ensure text wraps within the bubble */
 }
 .chatbox .incoming p {
   border-radius: 10px 10px 10px 0;
@@ -197,13 +194,33 @@ header h2 {
   }
 }
 `;
+document.addEventListener('DOMContentLoaded', () => {
 
 const styleSheet = document.createElement('style');
 styleSheet.type = 'text/css';
 styleSheet.innerText = style;
-document.head.appendChild(styleSheet);
+const markedScript = document.createElement('script');
+markedScript.src = "https://cdn.jsdelivr.net/npm/marked/marked.min.js";
+const addLinksToHead = () => {
+  // Create and append the first link
+  const link1 = document.createElement('link');
+  link1.rel = 'stylesheet';
+  link1.href = 'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0';
+  document.head.appendChild(link1);
 
+  // Create and append the second link
+  const link2 = document.createElement('link');
+  link2.rel = 'stylesheet';
+  link2.href = 'https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@48,400,1,0';
+  document.head.appendChild(link2);
+};
+
+document.head.appendChild(markedScript);
+document.head.appendChild(styleSheet);
+markedScript.onload= () => {
+  console.log("marked.js loaded successfully!");
 // Inject HTML structure
+addLinksToHead();
 const chatbotHTML = `
   <button class="chatbot-toggler">
     <span class="material-symbols-rounded">mode_comment</span>
@@ -216,7 +233,6 @@ const chatbotHTML = `
     </header>
     <ul class="chatbox">
       <li class="chat incoming">
-       
       </li>
     </ul>
     <div class="chat-input">
@@ -234,7 +250,7 @@ const closeBtn = document.querySelector('.close-btn');
 const chatbox = document.querySelector('.chatbox');
 const chatInput = document.querySelector('.chat-input textarea');
 const sendChatBtn = document.querySelector('.chat-input span');
-
+//console.log("checking parsing", marked("Hello **world**!"));
 let userMessage = null;
 const inputInitHeight = chatInput.scrollHeight;
 
@@ -246,7 +262,7 @@ const createChatLi = (message, className) => {
       ? `<p></p>`
       : `<span class="material-symbols-outlined">smart_toy</span><p></p>`;
   chatLi.innerHTML = chatContent;
-  chatLi.querySelector('p').textContent = message;
+  chatLi.querySelector('p').innerHTML = message;
   return chatLi;
 };
 
@@ -255,7 +271,7 @@ const streamResponse = async (chatElement) => {
 
   try {
     // Replace 'YOUR_API_ENDPOINT' with the actual endpoint URL
-    const response = await fetch('http://3.1.70.11:5000/api/generate_response', {
+    const response = await fetch('https://searchsafm.schoolafm.com/api/generate_response', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -263,7 +279,11 @@ const streamResponse = async (chatElement) => {
       },
       body: JSON.stringify({
         user_query: userMessage,
-        user_id: 512, // Add user_id if necessary
+        user_id: "512", // Add user_id if necessary
+        name:"",
+        email: "",
+        membership_level: "other",
+        selected_rag: "Internal FAQs",
       }),
     });
 
@@ -276,16 +296,17 @@ const streamResponse = async (chatElement) => {
       const { done, value } = await reader.read();
       if (done) break;
 
-      // Decode and append the response chunk
       const chunk = decoder.decode(value, { stream: true });
+
       if (firstChunk) {
         // Replace "Thinking..." with the first chunk
-        messageElement.textContent = chunk;
+        messageElement.innerHTML = marked.parse(chunk);
         firstChunk = false;
       } else {
         // Append the subsequent chunks
-        messageElement.textContent += chunk;
+        messageElement.innerHTML += marked.parse(chunk);
       }
+
       chatbox.scrollTo(0, chatbox.scrollHeight);
     }
   } catch (error) {
@@ -356,12 +377,6 @@ chatbox.addEventListener('scroll', () => {
   }
 });
 
-const generateResponse = (chatElement) => {
-  const messageElement = chatElement.querySelector('p');
-  messageElement.textContent = responseText;
-  chatbox.scrollTo(0, chatbox.scrollHeight);
-};
-
 const handleChat = () => {
   userMessage = chatInput.value.trim();
   if (!userMessage) return;
@@ -398,3 +413,5 @@ closeBtn.addEventListener('click', () =>
 chatbotToggler.addEventListener('click', () =>
   document.body.classList.toggle('show-chatbot'),
 );
+};
+});
