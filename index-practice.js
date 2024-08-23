@@ -227,8 +227,9 @@ const chatbotHTML = `
     <span class="material-symbols-outlined">close</span>
   </button>
   <div class="chatbot">
+  
     <header>
-      <h2>Chatbot</h2>
+    <h2> Welcome to the Chat</2>
       <span class="close-btn material-symbols-outlined">close</span>
     </header>
     <ul class="chatbox">
@@ -300,11 +301,11 @@ const streamResponse = async (chatElement) => {
 
       if (firstChunk) {
         // Replace "Thinking..." with the first chunk
-        messageElement.innerHTML = marked.parse(chunk);
+        messageElement.innerHTML = chunk;
         firstChunk = false;
       } else {
         // Append the subsequent chunks
-        messageElement.innerHTML += marked.parse(chunk);
+        messageElement.innerHTML += chunk;
       }
 
       chatbox.scrollTo(0, chatbox.scrollHeight);
@@ -368,7 +369,7 @@ const fetchChatHistory = async (userId, pageNumber) => {
   }
 };
 
-fetchChatHistory(userId, pageNumber);
+//fetchChatHistory(userId, pageNumber);
 
 chatbox.addEventListener('scroll', () => {
   if (chatbox.scrollTop === 0) {
