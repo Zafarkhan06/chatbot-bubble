@@ -118,18 +118,20 @@ header h2 {
   margin: 0 10px 7px 0;
 }
 .chatbox .chat p {
-  white-space: pre-wrap;
-  padding: 12px 16px;
+  padding: 8px 8px;
   border-radius: 10px 10px 0 10px;
-  max-width: 75%;
+  max-width: 85%;
   color: #fff;
   font-size: 0.95rem;
   background: #724ae8;
-  word-wrap: break-word; /* Ensure long words break */
-  overflow-wrap: break-word; /* Ensure text wraps within the bubble */
 }
 .chatbox .incoming p {
   border-radius: 10px 10px 10px 0;
+  word-wrap: break-word;
+ 
+}
+.chatbox .incoming p ol {
+padding-left: 30px;
 }
 .chatbox .chat p.error {
   color: #721c24;
@@ -138,6 +140,7 @@ header h2 {
 .chatbox .incoming p {
   color: #000;
   background: #f2f2f2;
+ 
 }
 .chatbot .chat-input {
   display: flex;
@@ -197,11 +200,13 @@ header h2 {
   }
 }
 `;
+document.addEventListener('DOMContentLoaded', () => {
 
 const styleSheet = document.createElement('style');
 styleSheet.type = 'text/css';
 styleSheet.innerText = style;
-document.head.appendChild(styleSheet);
+const showdownScript = document.createElement('script');
+showdownScript.src = "https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js";
 const addLinksToHead = () => {
   // Create and append the first link
   const link1 = document.createElement('link');
@@ -215,20 +220,27 @@ const addLinksToHead = () => {
   link2.href = 'https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@48,400,1,0';
   document.head.appendChild(link2);
 };
+
+document.head.appendChild(showdownScript);
+document.head.appendChild(styleSheet);
+showdownScript.onload= () => {
+  console.log("marked.js loaded successfully!");
+  const converter = new showdown.Converter();
 // Inject HTML structure
+addLinksToHead();
 const chatbotHTML = `
   <button class="chatbot-toggler">
     <span class="material-symbols-rounded">mode_comment</span>
     <span class="material-symbols-outlined">close</span>
   </button>
   <div class="chatbot">
+  
     <header>
-      <h2>Chatbot</h2>
+    <h2> Welcome to the Chat</2>
       <span class="close-btn material-symbols-outlined">close</span>
     </header>
     <ul class="chatbox">
       <li class="chat incoming">
-       
       </li>
     </ul>
     <div class="chat-input">
@@ -246,10 +258,11 @@ const closeBtn = document.querySelector('.close-btn');
 const chatbox = document.querySelector('.chatbox');
 const chatInput = document.querySelector('.chat-input textarea');
 const sendChatBtn = document.querySelector('.chat-input span');
-
+//console.log("checking parsing", marked("Hello **world**!"));
 let userMessage = null;
+// Initialize history array
+let chatHistory = [];
 const inputInitHeight = chatInput.scrollHeight;
-addLinksToHead();
 
 const createChatLi = (message, className) => {
   const chatLi = document.createElement('li');
@@ -259,13 +272,14 @@ const createChatLi = (message, className) => {
       ? `<p></p>`
       : `<span class="material-symbols-outlined">smart_toy</span><p></p>`;
   chatLi.innerHTML = chatContent;
-  chatLi.querySelector('p').textContent = message;
+  console.log('the message is:', message);
+  chatLi.querySelector('p').innerHTML = message;
   return chatLi;
 };
 
 const streamResponse = async (chatElement) => {
   const messageElement = chatElement.querySelector('p');
-
+  let fullResponse = '';  //
   try {
     // Replace 'YOUR_API_ENDPOINT' with the actual endpoint URL
     const response = await fetch('https://4vfumfuhi4.us-east-1.awsapprunner.com/api/chatbot/chat', {
@@ -276,7 +290,12 @@ const streamResponse = async (chatElement) => {
       },
       body: JSON.stringify({
         question: userMessage,
-        //user_id: 512, // Add user_id if necessary
+        history: chatHistory  // Send the history array to the API
+        // user_id: "512", // Add user_id if necessary
+        // name:"",
+        // email: "",
+        // membership_level: "other",
+        // selected_rag: "Internal FAQs",
       }),
     });
 
@@ -289,18 +308,17 @@ const streamResponse = async (chatElement) => {
       const { done, value } = await reader.read();
       if (done) break;
 
-      // Decode and append the response chunk
       const chunk = decoder.decode(value, { stream: true });
-      if (firstChunk) {
-        // Replace "Thinking..." with the first chunk
-        messageElement.textContent = chunk;
-        firstChunk = false;
-      } else {
-        // Append the subsequent chunks
-        messageElement.textContent += chunk;
-      }
+
+      fullResponse += chunk;
+      messageElement.textContent = fullResponse;
       chatbox.scrollTo(0, chatbox.scrollHeight);
     }
+    chatHistory.push({
+      user_query: userMessage,
+      AI_response: fullResponse
+    });
+    messageElement.innerHTML = converter.makeHtml(fullResponse);
   } catch (error) {
     console.error('Error fetching response:', error);
     messageElement.textContent = 'Sorry, something went wrong. Please try again.';
@@ -360,7 +378,7 @@ const fetchChatHistory = async (userId, pageNumber) => {
   }
 };
 
-fetchChatHistory(userId, pageNumber);
+//fetchChatHistory(userId, pageNumber);
 
 chatbox.addEventListener('scroll', () => {
   if (chatbox.scrollTop === 0) {
@@ -368,12 +386,6 @@ chatbox.addEventListener('scroll', () => {
     fetchChatHistory(userId, pageNumber);
   }
 });
-
-const generateResponse = (chatElement) => {
-  const messageElement = chatElement.querySelector('p');
-  messageElement.textContent = responseText;
-  chatbox.scrollTo(0, chatbox.scrollHeight);
-};
 
 const handleChat = () => {
   userMessage = chatInput.value.trim();
@@ -411,3 +423,5 @@ closeBtn.addEventListener('click', () =>
 chatbotToggler.addEventListener('click', () =>
   document.body.classList.toggle('show-chatbot'),
 );
+};
+});
