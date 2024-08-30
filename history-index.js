@@ -22,14 +22,15 @@ const style = `
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: #16525C;
+  background: #16525C !important;
   transition: all 0.2s ease;
+  z-index: 1500;
 }
 body.show-chatbot .chatbot-toggler {
   transform: rotate(90deg);
 }
 .chatbot-toggler span {
-  color: #fff;
+  color: #fff !important;
   position: absolute;
 }
 .chatbot-toggler span:last-child,
@@ -40,11 +41,12 @@ body.show-chatbot .chatbot-toggler span:last-child {
   opacity: 1;
 }
 .chatbot {
+z-index: 1200;
   position: fixed;
   right: 30px;
   bottom: 80px;
   width: 460px;
-  background: #fff;
+  background: #fff !important;
   border-radius: 15px;
   overflow: hidden;
   opacity: 0;
@@ -64,8 +66,8 @@ body.show-chatbot .chatbot {
   padding: 10px 0;
   position: relative;
   text-align: center;
-  color: #fff;
-  background: #16525C;
+  color: #fff !important;
+  background: #16525C !important;
   box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 .chatbot header span {
@@ -81,18 +83,18 @@ header h2 {
 }
 .chatbot .chatbox {
   overflow-y: auto;
-  height: 600px;
+  height: 80dvh;
   padding: 30px 20px 100px;
 }
 .chatbot :where(.chatbox, textarea)::-webkit-scrollbar {
   width: 6px;
 }
 .chatbot :where(.chatbox, textarea)::-webkit-scrollbar-track {
-  background: #fff;
+  background: #fff !important;
   border-radius: 25px;
 }
 .chatbot :where(.chatbox, textarea)::-webkit-scrollbar-thumb {
-  background: #ccc;
+  background: #ccc !important;
   border-radius: 25px;
 }
 .chatbox .chat {
@@ -102,46 +104,52 @@ header h2 {
 .chatbox .outgoing {
   margin: 20px 0;
   justify-content: flex-end;
-  min-width: 80%;   
+  
 }
-  .chatbox .outgoing p {
-  min-width: 80%;}
-.chatbox .incoming span {
-  width: 32px;
-  height: 32px;
-  color: #fff;
-  cursor: default;
-  text-align: center;
+ .chatbox .incoming span {
+   width: 32px;
+   height: 32px;
+   cursor: default;
+   line-height: 32px;
+   align-self: flex-end;
+   margin-right: 10px;
+   text-align: center;
   line-height: 32px;
   align-self: flex-end;
-  background: #16525C;
+  background: #16525C !important;
   border-radius: 4px;
-  margin: 0 10px 7px 0;
-}
+ }
+.chatbox .incoming .img1{
+   width: 32px;
+   height: 32px;
+  margin-right:10px;
+  cursor: default;
+  
+  }
+
 .chatbox .chat p {
   padding: 8px 8px;
   border-radius: 10px 10px 0 10px;
   max-width: 85%;
-  color:#000;
+  color:#000 !important;
   font-size: 0.95rem;
   background: #f2f2f2;
 }
 .chatbox .incoming p {
   border-radius: 10px 10px 10px 0;
   word-wrap: break-word;
- 
+   min-width: 30%; 
 }
 .chatbox .incoming p ol {
 padding-left: 30px;
 }
 .chatbox .chat p.error {
-  color: #721c24;
-  background: #f8d7da;
+  color: #721c24 !important;
+  background: #f8d7da !important;
 }
 .chatbox .incoming p {
-  color: white;
-  background: #16525C;
- 
+  color: white !important;
+  background: #16525C !important;
 }
 .chatbot .chat-input {
   display: flex;
@@ -149,9 +157,9 @@ padding-left: 30px;
   position: absolute;
   bottom: 0;
   width: 100%;
-  background: #fff;
+  background: #fff !important;
   padding: 1px 20px;
-  border-top: 1px solid #ddd;
+  border-top: 1px solid #ddd !important;
 }
 .chat-input textarea {
   height: 55px;
@@ -165,7 +173,7 @@ padding-left: 30px;
 }
 .chat-input span {
   align-self: flex-end;
-  color: #16525C;
+  color: #16525C !important;
   cursor: pointer;
   height: 55px;
   display: flex;
@@ -176,6 +184,7 @@ padding-left: 30px;
 .chat-input textarea:valid ~ span {
   visibility: visible;
 }
+
 
 @media (max-width: 490px) {
   .chatbot-toggler {
@@ -237,7 +246,7 @@ document.addEventListener('DOMContentLoaded', () => {
   
       const chatbotHTML = `
         <button class="chatbot-toggler">
-          <span class="material-symbols-rounded"><img src="./fav.png" class="img"></span>
+          <span class="material-symbols-rounded"><img src="https://drol7z533heis.cloudfront.net/ML.svg" class="img"></span>
           <span class="material-symbols-outlined">close</span>
         </button>
         <div class="chatbot">
@@ -298,7 +307,7 @@ document.addEventListener('DOMContentLoaded', () => {
         chatLi.classList.add('chat', className);
         let chatContent = className === 'outgoing'
           ? `<p></p>`
-          : `<span class="material-symbols-outlined">smart_toy</span><p></p>`;
+          : `<span><img class="img1" src="https://drol7z533heis.cloudfront.net/ML.svg"></span><p></p>`;
         chatLi.innerHTML = chatContent;
         chatLi.querySelector('p').innerHTML = converter.makeHtml(message);
         return chatLi;
