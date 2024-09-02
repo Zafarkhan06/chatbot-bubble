@@ -1,4 +1,3 @@
-// Inline your CSS
 const style = `
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
 
@@ -15,8 +14,8 @@ const style = `
   right: 25px !important;
   outline: none !important;
   border: none !important;
-  height: 50px !important;
-  width: 50px !important;
+  height: 60px !important;
+  width: 60px !important;
   display: flex !important;
   cursor: pointer !important;
   align-items: center !important;
@@ -44,7 +43,7 @@ body.show-chatbot .chatbot-toggler span:last-child {
 z-index: 99999999999999999;
   position: fixed;
   right: 30px !important;
-  bottom: 80px !important;
+  bottom: 90px !important;
   width: 460px !important;
   background: #fff !important;
   border-radius: 15px !important;
@@ -83,48 +82,48 @@ header h2 {
   color: white !important;
 }
 .chatbot .chatbox {
-  overflow-y: auto;
-  height: 70dvh !important;
-  padding: 30px 20px 100px !important;
+  overflow-y: auto !important;
+  height: 73dvh !important;
+  padding: 30px 20px 100px 0px !important;
 }
 .chatbot :where(.chatbox, textarea)::-webkit-scrollbar {
-  width: 6px;
+  width: 6px !important;
 }
 .chatbot :where(.chatbox, textarea)::-webkit-scrollbar-track {
   background: #fff !important;
-  border-radius: 25px;
+  border-radius: 25px !important;
 }
 .chatbot :where(.chatbox, textarea)::-webkit-scrollbar-thumb {
   background: #ccc !important;
-  border-radius: 25px;
+  border-radius: 25px !important;
 }
 .chatbox .chat {
-  display: flex;
-  list-style: none;
+  display: flex !important;
+  list-style: none !important;
 }
 .chatbox .outgoing {
   margin: 20px 0 !important;
-  justify-content: flex-end;
+  justify-content: flex-end !important;
   
 }
  .chatbox .incoming span {
    width: 32px !important;
    height: 32px !important;
    cursor: default;
-   line-height: 32px;
-   align-self: flex-end;
-   margin-right: 10px;
-   text-align: center;
-  line-height: 32px;
-  align-self: flex-end;
+   line-height: 32px !important;
+   align-self: flex-end !important;
+   margin-right: 10px !important;
+   text-align: center !important;
+  line-height: 32px !important;
+  align-self: flex-end !important;
   background: #16525C !important;
   border-radius: 4px !important;
  }
 .chatbox .incoming .img1{
    width: 32px !important;
    height: 32px !important;
-  margin-right:10px;
-  cursor: default;
+  margin-right:10px !important;
+  cursor: default !important;
   }
 
 .chatbox .chat p {
@@ -135,15 +134,17 @@ header h2 {
   font-size: 0.95rem !important;
   background: #f2f2f2 !important;
 }
-  .hello p {
-  min-width: 100% !important;
-  padding: 0px}
+
+ .hello p {
+  min-width: 95% !important;
+  padding: 0px !important}
   .hi p {
   min-width: "90%" !important;}
+
 .chatbox .incoming p {
   border-radius: 10px 10px 10px 0 !important;
   word-wrap: break-word !important;
-   min-width: 30% !important; 
+   min-width: 40% !important; 
 }
 .chatbox .incoming p ol {
 padding-left: 30px !important;
@@ -157,34 +158,36 @@ padding-left: 30px !important;
   background: #16525C !important;
 }
 .chatbot .chat-input {
-  display: flex;
-  gap: 5px;
-  position: absolute;
-  bottom: 0;
-  width: 100%;
+  display: flex !important;
+  gap: 5px !important;
+  position: absolute !important;
+  bottom: 0 !important;
+  width: 100% !important;
   background: #fff !important;
   padding: 1px 20px !important;
   border-top: 1px solid #ddd !important;
 }
 .chat-input textarea {
-  height: 55px;
-  width: 100%;
-  border: none;
-  outline: none;
-  resize: none;
+  height: 55px !important;
+  width: 100% !important;
+  border: none !important;
+  outline: none !important;
+  resize: none !important;
   max-height: 180px !important;
   padding: 10px 15px 10px 0 !important;
   font-size: 0.95rem !important;
   color: black !important
 }
+.chat-input textarea::placeholder {
+  color: black !important;
+  }
 .chat-input span {
-  align-self: flex-end;
+  align-self: flex-end !important;
   color: #16525C !important;
-  cursor: pointer;
+  cursor: pointer !important;
   height: 55px !important;
   display: flex !important;
   align-items: center !important;
-  visibility: hidden !important;
   font-size: 2.20rem !important; 
 }
 .chat-input textarea:valid ~ span {
@@ -206,17 +209,17 @@ padding-left: 30px !important;
   }
   .chatbot .chatbox {
     height: 90% !important;
-    padding: 25px 15px 100px !important;
+    padding: 25px 15px 100px 0px !important;
   }
   .chatbot .chat-input {
     padding: 5px 15px !important;
   }
   .chatbot header span {
-    display: block;
+    display: block !important;
   }
     .img{
-    width:50px !important; 
-    height:50px 
+    width:60px !important; 
+    height:60px !important 
     }
 }
 `;
@@ -313,7 +316,11 @@ document.addEventListener('DOMContentLoaded', () => {
         chatLi.classList.add('chat', className);
         let chatContent = className === 'outgoing'
           ? `<p class="hello"></p>`
-          : `<span><img class="img1" src="https://drol7z533heis.cloudfront.net/ML.svg"></span><p class="hi"></p>`;
+          : `
+          <div>
+          LifeMed Assistant:
+          <p class="hi"></p></div>
+          `;
         chatLi.innerHTML = chatContent;
         chatLi.querySelector('p').innerHTML = converter.makeHtml(message);
         return chatLi;
@@ -408,4 +415,3 @@ document.addEventListener('DOMContentLoaded', () => {
       chatbotToggler.addEventListener('click', () => document.body.classList.toggle('show-chatbot'));
     };
   });
-  

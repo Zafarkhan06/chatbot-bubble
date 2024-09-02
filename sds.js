@@ -1,4 +1,3 @@
-// Inline your CSS
 const style = `
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
 
@@ -15,8 +14,8 @@ const style = `
   right: 25px !important;
   outline: none !important;
   border: none !important;
-  height: 50px !important;
-  width: 50px !important;
+  height: 60px !important;
+  width: 60px !important;
   display: flex !important;
   cursor: pointer !important;
   align-items: center !important;
@@ -44,7 +43,7 @@ body.show-chatbot .chatbot-toggler span:last-child {
 z-index: 99999999999999999;
   position: fixed;
   right: 30px !important;
-  bottom: 80px !important;
+  bottom: 90px !important;
   width: 460px !important;
   background: #fff !important;
   border-radius: 15px !important;
@@ -84,8 +83,8 @@ header h2 {
 }
 .chatbot .chatbox {
   overflow-y: auto;
-  height: 70dvh !important;
-  padding: 30px 20px 100px !important;
+  height: 73dvh !important;
+  padding: 30px 20px 100px 0px !important;
 }
 .chatbot :where(.chatbox, textarea)::-webkit-scrollbar {
   width: 6px;
@@ -130,20 +129,15 @@ header h2 {
 .chatbox .chat p {
   padding: 8px 8px !important;
   border-radius: 10px 10px 0 10px !important;
-  max-width: 100% !important;
+  max-width: 85% !important;
   color:#000 !important;
   font-size: 0.95rem !important;
   background: #f2f2f2 !important;
 }
-  .hello p {
-  min-width: 100% !important;
-  padding: 0px}
-  .hi p {
-  min-width: "90%" !important;}
 .chatbox .incoming p {
   border-radius: 10px 10px 10px 0 !important;
   word-wrap: break-word !important;
-   min-width: 30% !important; 
+   min-width: 40% !important; 
 }
 .chatbox .incoming p ol {
 padding-left: 30px !important;
@@ -177,14 +171,16 @@ padding-left: 30px !important;
   font-size: 0.95rem !important;
   color: black !important
 }
+.chat-input textarea::placeholder {
+  color: black !important;
+  }
 .chat-input span {
   align-self: flex-end;
   color: #16525C !important;
-  cursor: pointer;
+  cursor: pointer !important;
   height: 55px !important;
   display: flex !important;
   align-items: center !important;
-  visibility: hidden !important;
   font-size: 2.20rem !important; 
 }
 .chat-input textarea:valid ~ span {
@@ -206,7 +202,7 @@ padding-left: 30px !important;
   }
   .chatbot .chatbox {
     height: 90% !important;
-    padding: 25px 15px 100px !important;
+    padding: 25px 15px 100px 0px !important;
   }
   .chatbot .chat-input {
     padding: 5px 15px !important;
@@ -215,8 +211,8 @@ padding-left: 30px !important;
     display: block;
   }
     .img{
-    width:50px !important; 
-    height:50px 
+    width:60px !important; 
+    height:60px 
     }
 }
 `;
@@ -312,8 +308,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const chatLi = document.createElement('li');
         chatLi.classList.add('chat', className);
         let chatContent = className === 'outgoing'
-          ? `<p class="hello"></p>`
-          : `<span><img class="img1" src="https://drol7z533heis.cloudfront.net/ML.svg"></span><p class="hi"></p>`;
+          ? `<p></p>`
+          : `<span><img class="img1" src="https://drol7z533heis.cloudfront.net/ML.svg"></span><p></p>`;
         chatLi.innerHTML = chatContent;
         chatLi.querySelector('p').innerHTML = converter.makeHtml(message);
         return chatLi;
@@ -408,4 +404,3 @@ document.addEventListener('DOMContentLoaded', () => {
       chatbotToggler.addEventListener('click', () => document.body.classList.toggle('show-chatbot'));
     };
   });
-  
