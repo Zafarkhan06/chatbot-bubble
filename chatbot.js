@@ -10,7 +10,7 @@ const style = `
 
 .chatbot-toggler {
   position: fixed !important;
-  bottom: 20px !important;
+  bottom: 10px !important;
   right: 25px !important;
   outline: none !important;
   border: none !important;
@@ -43,7 +43,7 @@ body.show-chatbot .chatbot-toggler span:last-child {
 z-index: 99999999999999999;
   position: fixed;
   right: 30px !important;
-  bottom: 90px !important;
+  bottom: 80px !important;
   width: 460px !important;
   background: #fff !important;
   border-radius: 15px !important;
@@ -83,8 +83,8 @@ header h2 {
 }
 .chatbot .chatbox {
   overflow-y: auto !important;
-  height: 73dvh !important;
-  padding: 30px 20px 100px 0px !important;
+  height: 77dvh !important;
+  padding: 30px 20px 100px 25px !important;
 }
 .chatbot :where(.chatbox, textarea)::-webkit-scrollbar {
   width: 6px !important;
@@ -142,7 +142,7 @@ header h2 {
   min-width: "90%" !important;}
 
 .chatbox .incoming p {
-  border-radius: 10px 10px 10px 0 !important;
+  border-radius: 10px 10px 10px 10px !important;
   word-wrap: break-word !important;
    min-width: 40% !important; 
 }
@@ -209,7 +209,7 @@ padding-left: 30px !important;
   }
   .chatbot .chatbox {
     height: 90% !important;
-    padding: 25px 15px 100px 0px !important;
+    padding: 25px 15px 100px !important;
   }
   .chatbot .chat-input {
     padding: 5px 15px !important;
@@ -260,7 +260,7 @@ document.addEventListener('DOMContentLoaded', () => {
         </button>
         <div class="chatbot">
           <header>
-            <h2> LifeMed Assistant</h2>
+            <h2> LifeMed's Assistant</h2>
             <span class="close-btn material-symbols-outlined">close</span>
           </header>
           <ul class="chatbox">
@@ -317,8 +317,8 @@ document.addEventListener('DOMContentLoaded', () => {
         let chatContent = className === 'outgoing'
           ? `<p class="hello"></p>`
           : `
-          <div>
-          LifeMed Assistant:
+          <div style="max-width: 90%">
+          LifeMed's Assistant:
           <p class="hi"></p></div>
           `;
         chatLi.innerHTML = chatContent;
